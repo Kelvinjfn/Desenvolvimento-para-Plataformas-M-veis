@@ -4,9 +4,7 @@ const logoutBtn = document.getElementById("logout-btn");
 const userInfo = document.getElementById("user-info");
 const menuToggle = document.getElementById("menu-toggle");
 const menu = document.getElementById("menu");
-// -------------------------------------------------------------------------
-// DADOS MOCKADOS DE VAGAS COM DETALHES COMPLETOS
-// -------------------------------------------------------------------------
+
 const mockVacancies = [
   { id: 1, title: "Estágio em Engenharia de Software", company: "Tech Solutions", desc: "Desenvolvimento full-stack com foco em Python e Django. Oportunidade para participar de projetos industriais e inovação.", salary: "R$ 1.500/mês", modality: "Híbrido", requirements: "Cursando 4º ano de Engenharia, conhecimento em Git." },
   { id: 2, title: "Auxiliar de Marketing Digital", company: "Startup X", desc: "Suporte na criação e execução de campanhas digitais e gestão de mídias sociais para branding.", salary: "R$ 1.200/mês", modality: "Remoto", requirements: "Conhecimento em Google Ads e Meta Ads, superior em andamento em Marketing." },
@@ -28,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("Erro ao acessar localStorage:", e);
   }
   
-  // Adicionar a aba "Minhas Candidaturas" dinamicamente
+  
   const navResume = document.getElementById("nav-resume");
   if (navResume) {
     const myApplicationsButton = document.createElement('button');
@@ -36,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     myApplicationsButton.className = 'ghost';
     myApplicationsButton.setAttribute('onclick', "navigate('applications')");
     myApplicationsButton.textContent = 'Minhas Candidaturas';
-    // Insere o botão de candidaturas após o botão Currículo (ou onde o navResume estiver)
+ 
     navResume.parentNode.insertBefore(myApplicationsButton, navResume.nextSibling);
   }
   
@@ -85,7 +83,8 @@ function renderHome() {
       <div class="home-buttons">
         <button class="primary" id="explorar-btn" onclick="activateHomeButton('explorar-btn'); navigate('vacancies')">Explorar Vagas</button>
         <button class="secondary" id="mentoria-btn" onclick="activateHomeButton('mentoria-btn'); navigate('mentors')">Mentoria</button>
-      </div>
+        <button class="ghost" onclick="getLocation()">📍 Vagas Próximas</button> 
+     </div>
     </section>
 
     <section class="features" style="margin-top:30px;">
@@ -819,4 +818,87 @@ function toggleTheme() {
   const isDark = document.body.classList.toggle("dark");
   localStorage.setItem("isDarkMode", isDark);
   document.getElementById("theme-toggle").textContent = isDark ? "☀️" : "🌙";
+}
+
+function getLocation() {
+  if (!navigator.geolocation) {
+    alert("Geolocalização não é suportada neste navegador.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+      showNearbyVacancies(userLat, userLng);
+    },
+    () => {
+      alert("Permissão de localização negada.");
+    }
+  );
+}
+
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI/180) *
+    Math.cos(lat2 * Math.PI/180) *
+    Math.sin(dLon/2) *
+    Math.sin(dLon/2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function showNearbyVacancies(userLat, userLng) {
+  app.innerHTML = `
+    <section class="card">
+      <h1>📍 Vagas próximas de você</h1>
+      <p class="small">Encontramos oportunidades em um raio de até 20km.</p>
+    </section>
+  `;
+
+  const container = document.createElement("div");
+
+  let found = false;
+
+  vacancies.forEach(vacancy => {
+    const distance = getDistance(userLat, userLng, vacancy.lat, vacancy.lng);
+
+    if (distance <= 20) {
+      found = true;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.marginBottom = "10px";
+
+      div.innerHTML = `
+        <h4>${vacancy.title}</h4>
+        <p><strong>${vacancy.company}</strong></p>
+        <p class="small">Distância: ${distance.toFixed(1)} km</p>
+        <button class="secondary" onclick="navigate('vacancies')">
+          Ver todas as vagas
+        </button>
+      `;
+
+      container.appendChild(div);
+    }
+  });
+
+  if (!found) {
+    container.innerHTML = `
+      <section class="card center">
+        <p class="small">Nenhuma vaga encontrada próxima a você no momento.</p>
+        <button class="primary" onclick="navigate('vacancies')">
+          Explorar Vagas
+        </button>
+      </section>
+    `;
+  }
+
+  app.appendChild(container);
 }

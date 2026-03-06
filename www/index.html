@@ -35,8 +35,18 @@
     <button id="theme-toggle" class="ghost" onclick="toggleTheme()">🌙</button>
   </header>
 
-  <main id="app">
-  </main>
+ <main id="app">
+
+  <div class="card center">
+    <h1>Oportunidades próximas</h1>
+    <p class="small">Encontre vagas perto de você usando sua localização.</p>
+
+    <button class="primary" onclick="getLocation()">
+      📍 Encontrar oportunidades próximas
+    </button>
+  </div>
+
+</main>
 
   <footer>
     Projeto Conecta Uni — Protótipo acadêmico • Alinhado ao ODS 8
@@ -58,5 +68,6 @@
       menu.classList.toggle('show');
     });
   </script>
+
 </body>
 </html>

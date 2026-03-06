@@ -370,6 +370,12 @@ button.ghost:hover {
   cursor: pointer;
   transition: all 0.25s ease;
   box-shadow: 0 2px 6px rgba(11, 99, 214, 0.1);
+
+  width: 230px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .home-buttons button:hover {
@@ -410,3 +416,4 @@ button.active-home {
   color: var(--blue);
   border-color: var(--blue);
 }
+

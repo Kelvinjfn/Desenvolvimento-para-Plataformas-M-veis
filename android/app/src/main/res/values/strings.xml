@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ConectaUni</string>
+    <string name="title_activity_main">ConectaUni</string>
+    <string name="package_name">com.meuapp.app</string>
+    <string name="custom_url_scheme">com.meuapp.app</string>
+</resources>
